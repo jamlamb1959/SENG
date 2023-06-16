@@ -20,7 +20,7 @@
 
 #include "SENG.h"
 
-void checkUpdate();
+// void checkUpdate();
  
 #ifndef TOUT
 #define TOUT std::cout << "(" << __LINE__ << "): "
@@ -39,7 +39,7 @@ extern std::string topic_g;
 
 // #include <semphr.h>
 
-extern SemaphoreHandle_t qMut_g;
+// extern SemaphoreHandle_t qMut_g;
 
 QueueHandle_t SMPUB_g = NULL;
 
@@ -214,7 +214,7 @@ class ClearQs
         static SM * sm = SM::instance();
         static SQ * sq = SQ::instance();
 
-        Locker l( qMut_g, __FILE__, __LINE__  );
+//        Locker l( qMut_g, __FILE__, __LINE__  );
         sq->reset();
 
         SIGNAL( "ok" );
@@ -279,7 +279,7 @@ class ParseSMSUB
 
         if ( cmd == "CHK" )
             {
-            checkUpdate();
+            // checkUpdate();
             }
         else if ( cmd == "REBOOT" )
             {
