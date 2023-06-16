@@ -1,2 +1,2 @@
-# UPLINK_MESH
-Interface between painlessmesh and cellular
+# SENG
+State engine library.
