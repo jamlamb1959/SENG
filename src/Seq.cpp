@@ -55,8 +55,8 @@ void Seq::Task::link(
         aNxt.unlink();
         }
 
-    aNxt.ivNxt = ivNxt;
-    aNxt.ivPrev = this;
+    aNxt.ivNxt = this;
+    aNxt.ivPrev = ivPrev;
     
     ivPrev->ivNxt = &aNxt;
     ivPrev = &aNxt;
