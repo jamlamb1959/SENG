@@ -6,7 +6,7 @@ endif
 
 DEST=repo.sheepshed.tk
 PLATFORM=esp32dev
-PROJ=UPLINK_MESH
+PROJ=SENG
 
 all: mkdir push
 
@@ -23,13 +23,8 @@ push:
 	@pio run
 	scp .pio/build/${PLATFORM}/firmware.bin ${DEST}:/var/www/html/firmware/$(BNAME)/${PLATFORM}/${PROJ}/firmware.bin
 
-upload:
-	pio run --target upload
-
-monitor:
-	pio device monitor
-
-mu: upload monitor
+publish:
+	@pio pkg publish
 
 
 
