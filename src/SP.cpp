@@ -352,7 +352,7 @@ class Send
         
         if ( sm->getVerbose() )
             {
-            TOUT << "S: " << msg << std::endl;
+            std::cout << "S: " << msg << std::endl;
             }
 
 #ifdef USE_PUBSUB
