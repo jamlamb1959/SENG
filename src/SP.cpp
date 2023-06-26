@@ -1389,6 +1389,7 @@ class LogTokens
         xQueueGenericSend( SMPUB_g, &m, 1000, queueSEND_TO_BACK );
 
         SIGNAL( "ok" );
+        TOUT << "\nivPayload: " << m->ivPayload << std::endl;
         }
 
     void load( 
