@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 
+#include <WiFi.h>
+
 #include <iostream>
 #include <vector>
 
@@ -30,7 +32,8 @@
 
 #include <PubSubClient.h>
 
-extern char mac_g[ 20 ];
+static bool _macLoaded = false;
+static char _mac[ 20 ];
 
 #ifdef USE_PUBSUB
 extern PubSubClient mqtt_g;
@@ -1345,6 +1348,17 @@ std::string _escapeQuotes(
     return ret;
     }
 
+static void _loadMac(
+        )
+    {
+    uint8_t rm[ 6 ];
+    
+    WiFi.macAddress( rm );
+    sprintf( _mac, "%02X:%02X:%02X:%02X:%02X:%02X",
+            rm[ 0 ], rm[ 1 ], rm[ 2 ],  
+            rm[ 3 ], rm[ 4 ], rm[ 5 ] );
+    }
+
 class LogTokens
         : public SP
     {
@@ -1352,6 +1366,11 @@ class LogTokens
     LogTokens(
             )
         {
+        if ( !_macLoaded )
+            {
+            _macLoaded = true;
+            _loadMac();
+            }
         }
 
     const char * className( 
@@ -1371,7 +1390,7 @@ class LogTokens
         Msg * m = new Msg( Msg::t_pub );
 
         m->ivPayload = "{\"MAC\":\"";
-        m->ivPayload += mac_g;
+        m->ivPayload += _mac;
         m->ivPayload += "\"";
 
         for( idx = 0; idx < ivTkn.size(); idx ++ )
