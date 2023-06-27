@@ -355,7 +355,7 @@ class Send
         
         if ( sm->getVerbose() )
             {
-            std::cout << "S: " << msg << std::endl;
+            std::cout << "(" << __LINE__ << ")S: " << msg << std::endl;
             }
 
 #ifdef USE_PUBSUB
@@ -371,7 +371,7 @@ class Send
             }
 #endif
 
-        Serial.print( msg.c_str() ); Serial.print( "\r\n" );
+        Serial2.print( msg.c_str() ); Serial2.print( "\r\n" );
 
         // (void) uart_write_bytes( UART_NUM_2, msg.c_str(), msg.length() );
         // (void) uart_write_bytes( UART_NUM_2, "\r\n", 2 );
