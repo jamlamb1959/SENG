@@ -324,6 +324,7 @@ class ParseSMSUB
 
 MOM( ParseSMSUB );
 
+#ifdef LOCAL_SP
 class Send
         : public SP
     {
@@ -407,6 +408,7 @@ class Send
     };
 
 MOM( Send );
+#endif
 
 class ClearCaptureStack
         : public SP
@@ -922,6 +924,7 @@ class Tmo
 
 MOM( Tmo );
 
+#ifdef __LOCAL_SP
 
 class SMPUB
         : public SP
@@ -1034,6 +1037,7 @@ class SMPUB
     };
 
 MOM( SMPUB );
+#endif
 
 SQ * SQ::instance(
         )
@@ -1578,6 +1582,8 @@ class QueueOperators
 
 MOM( QueueOperators );
 
+#ifdef __LOCAL_SP
+
 class SetNetwork
         : public SP
     {
@@ -1657,6 +1663,7 @@ class SetNetwork
     };
 
 MOM( SetNetwork );
+#endif
 
 class Branch
         : public SP
