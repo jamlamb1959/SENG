@@ -12,7 +12,7 @@
 #include "Fifo.h"
 #include "TknDB.h"
 
-#include <driver/uart.h>
+// #include <driver/uart.h>
 
 #include "freertos/FreeRTOS.h"
 
@@ -371,8 +371,10 @@ class Send
             }
 #endif
 
-        (void) uart_write_bytes( UART_NUM_2, msg.c_str(), msg.length() );
-        (void) uart_write_bytes( UART_NUM_2, "\r\n", 2 );
+        Serial.print( msg.c_str() ); Serial.print( "\r\n" );
+
+        // (void) uart_write_bytes( UART_NUM_2, msg.c_str(), msg.length() );
+        // (void) uart_write_bytes( UART_NUM_2, "\r\n", 2 );
         
         if ( ivTmo >= 0 )
             {
@@ -983,8 +985,10 @@ class SMPUB
 
                         ln = strlen( buf );
 
-                        (void) uart_write_bytes( UART_NUM_2, buf, ln );
-                        (void) uart_write_bytes( UART_NUM_2, "\r\n", 2 );
+                        Serial2.printf( "%*.*s\r\n", (int) ln, (int) ln, buf );
+
+                        // (void) uart_write_bytes( UART_NUM_2, buf, ln );
+                        // (void) uart_write_bytes( UART_NUM_2, "\r\n", 2 );
             
                         delete m;
                         break;
@@ -1622,8 +1626,9 @@ class SetNetwork
             std::cout << "S: '" << msg << "'" << std::endl;
             }
 
-        (void) uart_write_bytes( UART_NUM_2, msg.c_str(), msg.length() );
-        (void) uart_write_bytes( UART_NUM_2, "\r\n", 2 );
+        Serial2.print( msg.c_str() ); Serial2.print( "\r\n" );
+        // (void) uart_write_bytes( UART_NUM_2, msg.c_str(), msg.length() );
+        // (void) uart_write_bytes( UART_NUM_2, "\r\n", 2 );
 
         if ( ivTmo >= 0 )
             {
