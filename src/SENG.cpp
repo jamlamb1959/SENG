@@ -59,6 +59,12 @@ void SM::signal(
         const std::string & aSigName 
         )
     {
+    if ( ivVerbose )
+        {
+        TOUT << "SM::signal(enter) - aSigName: " << aSigName 
+                << "\n";
+        }
+
     static char ringBuffer[ 100 ];
     static uint8_t inIdx = 0;
 
@@ -201,6 +207,11 @@ void SM::signal(
     Locker l( ivMut, __FILE__, __LINE__ );
 
     ivDepth --;
+
+    if ( ivVerbose )
+        {
+        TOUT << "SM::signal(exit) - aSigName: " << aSigName << "\n";
+        }
     }
     
 void SM::signal( 
