@@ -1471,7 +1471,7 @@ static void _getTkn(
         }
     }
 
-static Filo< std::string > operList_g;
+extern Filo< std::string > operList_g;
 
 class QueueOperators
         : public SP
