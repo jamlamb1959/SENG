@@ -15,9 +15,9 @@ class Locker
             )
             : ivMut( &aMut )
         {
-// Serial.printf( "%s(%d) %p(take), %p \r\n", aFN, aLine, this, ivMut );
+Serial.printf( "%s(%d) %p(take), %p \r\n", aFN, aLine, this, ivMut );
         xSemaphoreTake( *ivMut, portMAX_DELAY );
-// Serial.printf( "%s(%d) %p(aquired)\r\n", aFN, aLine, this );
+Serial.printf( "%s(%d) %p(aquired)\r\n", aFN, aLine, this );
         }
 
     ~Locker( 
