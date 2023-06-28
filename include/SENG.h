@@ -205,7 +205,7 @@ class SM
     std::map< std::string, std::string > ivGE;
     std::map< std::string, ST * > ivST;
 
-    SemaphoreHandle_t ivMut;
+    // SemaphoreHandle_t ivMut;
     QueueHandle_t ivEvtQ;
 
     time_t ivTmo;

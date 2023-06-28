@@ -175,9 +175,11 @@ void SM::signal(
 
                     if ( ivCur != NULL )
                         {
-                        Serial.println( "%s(%d) - (called) ivCur->exec()" );
+                        Serial.printf( "%s(%d) - (called) ivCur->exec()", 
+                                __FILE__, __LINE__ );
                         ivCur->exec();
-                        Serial.println( "%s(%d) - (returned) ivCur->exec()" );
+                        Serial.printf( "%s(%d) - (returned) ivCur->exec()",
+                                __FILE__, __LINE__ );
                         continue;
                         }
                     }
@@ -209,9 +211,11 @@ void SM::signal(
             
             if ( ivCur != NULL )
                 {
-                Serial.println( "%s(%d) - (called) ivCur->exec()" );
+                Serial.printf( "%s(%d) - (called) ivCur->exec()",
+                        __FILE__, __LINE__ );
                 ivCur->exec();
-                Serial.println( "%s(%d) - (returned) ivCur->exec()" );
+                Serial.printf( "%s(%d) - (returned) ivCur->exec()",
+                        __FILE__, __LINE__ );
                 continue;
                 }
             }
