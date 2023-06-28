@@ -23,7 +23,7 @@ class Fifo
         {
         ivQ = new Item[ ivCapacity ];
 
-        ivMut = xSemaphoreCreateMutex();
+        // ivMut = xSemaphoreCreateMutex();
         }
 
     ~Fifo(
@@ -47,7 +47,7 @@ class Fifo
     Item pop(
             )
         {
-        Locker l( ivMut );
+        // Locker l( ivMut );
 
         static Item null;
 
@@ -69,7 +69,7 @@ class Fifo
             const Item & anItem
             )
         {
-        Locker l( ivMut );
+        // Locker l( ivMut );
 
         if ( depth() == ivCapacity )
             {
@@ -88,7 +88,7 @@ class Fifo
     void reset(
             )
         {
-        Locker l( ivMut );
+        // Locker l( ivMut );
 
         ivInIdx = ivOutIdx = 0;
         }
@@ -100,6 +100,6 @@ class Fifo
     size_t ivInIdx;
     size_t ivOutIdx;
 
-    SemaphoreHandle_t ivMut;
+    // SemaphoreHandle_t ivMut;
     };
 #endif

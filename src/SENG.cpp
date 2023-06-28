@@ -101,10 +101,11 @@ void SM::signal(
     /*
     ** include the null character to avoid having to use outIdx;
     */
-    ringBuffer[ inIdx ] = *sPtr;
-    inIdx ++;
+    ringBuffer[ inIdx ] = '\0';
+    inIdx = (inIdx + 1) % sizeof( ringBuffer );
     }
 
+    Serial.printf( "%s(%d) - idx: %u\r\n", __FILE__, __LINE__, (unsigned) idx );
     xQueueGenericSend( ivEvtQ, &idx, 1000, queueSEND_TO_BACK );
 
     {
@@ -126,21 +127,24 @@ void SM::signal(
     */
     for( ; ; )
         {
-        haveSig = xQueueReceive( ivEvtQ, &idx, 60000 );
+        haveSig = xQueueReceive( ivEvtQ, &idx, 1000 );
 
         Serial.printf( "haveSig: %s\r\n", ((haveSig) ? "TRUE" : "FALSE") );
 
         if ( !haveSig )
             {
+            Serial.printf( "%s(%d) - break;\r\n", __FILE__, __LINE__ );
             break;
             }
 
+        Serial.printf( "%s(%d) - idx: %u\r\n", __FILE__, __LINE__, (unsigned) idx );
         for( sigName.clear(); ringBuffer[ idx ] != '\0'; idx = (idx + 1) % sizeof( ringBuffer ) )
             {
             sigName += ringBuffer[ idx ];
             }
 
-        Serial.printf( "ivCur: 0x%p, sigName: %s\r\n", ivCur, sigName.c_str() );
+        Serial.printf( "%s(%d) - ivCur: 0x%p, sigName: %s\r\n", 
+                __FILE__, __LINE__, ivCur, sigName.c_str() );
 
         if ( ivCur != NULL )
             {
@@ -221,16 +225,12 @@ void SM::signal(
             }
         }
 
-    /*
-    ** need to lock up so only a single thread is allowed to change the state.
-    */
-    // Locker l( ivMut, __FILE__, __LINE__ );
-
     ivDepth --;
 
     if ( ivVerbose )
         {
-        Serial.printf( "SM::signal(exit) - aSigName: %s\r\n", aSigName.c_str() );
+        Serial.printf( "SM::signal(exit) - aSigName: %s\r\n", 
+                aSigName.c_str() );
         }
     }
     
