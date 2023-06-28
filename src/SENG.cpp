@@ -62,7 +62,8 @@ void SM::signal(
     if ( ivVerbose )
         {
         TOUT << "SM::signal(enter) - aSigName: " << aSigName 
-                << "\n";
+                << "(depth: " << ivDepth << "), (ivCur: '"
+                <<  ((ivCur != NULL) ? ivCur->getName().c_str() : "(NULL)") << "')" << std::endl;
         }
 
     static char ringBuffer[ 100 ];
@@ -79,12 +80,6 @@ void SM::signal(
     int depth;
 
     ST * ost;
-
-    if ( ivVerbose > 2 )
-        {
-        TOUT << "(" << ivDepth << ") - signal( '" << aSigName << "' ), ivCur: '"
-                <<  ((ivCur != NULL) ? ivCur->getName().c_str() : "(NULL)") << "'" << std::endl;
-        }
 
     uint8_t destIdx;
     uint8_t idx;
@@ -380,13 +375,13 @@ void ST::exec(
         {
         if ( sm->getVerbose() > 2 )
             {
-            TOUT << "State: '"<< ivName << "' SP: \"" << *ivSP << "\"\n";
+            TOUT << "ST::exec -  State: '"<< ivName << "' SP: \"" << *ivSP << "\"\n";
             }
         ivSP->exec();
         }
     else
         {
-        TOUT << "State: '" << ivName << "', (ivSP == NULL)\n";
+        TOUT << "ST::exec - State: '" << ivName << "', (ivSP == NULL)\n";
         }
     }
 
