@@ -213,8 +213,8 @@ void SM::signal(
 
     if ( ivVerbose )
         {
-        Serial.printf( "SM::signal(exit) - aSigName: %s\r\n", 
-                aSigName.c_str() );
+        Serial.printf( "SM::signal(exit) - aSigName: %s, ivDepth: %d\r\n", 
+                aSigName.c_str(), ivDepth );
         }
     }
     
