@@ -211,7 +211,7 @@ void SM::signal(
 
     ivDepth --;
 
-    if ( ivVerbose )
+    if ( ivVerbose > 5 )
         {
         Serial.printf( "SM::signal(exit) - aSigName: %s, ivDepth: %d\r\n", 
                 aSigName.c_str(), ivDepth );
