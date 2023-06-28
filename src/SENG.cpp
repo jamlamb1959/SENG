@@ -89,7 +89,7 @@ void SM::signal(
     uint8_t idx;
 
     {
-    Locker l( ivMut, __FILE__, __LINE__ );
+    // Locker l( ivMut, __FILE__, __LINE__ );
 
     const char * sPtr;
 
@@ -108,7 +108,7 @@ void SM::signal(
     xQueueGenericSend( ivEvtQ, &idx, 1000, queueSEND_TO_BACK );
 
     {
-    Locker l( ivMut, __FILE__, __LINE__ );
+    // Locker l( ivMut, __FILE__, __LINE__ );
     
     depth = ivDepth ++;
 
@@ -128,6 +128,8 @@ void SM::signal(
         {
         haveSig = xQueueReceive( ivEvtQ, &idx, 60000 );
 
+        Serial.printf( "haveSig: %s\r\n", ((haveSig) ? "TRUE" : "FALSE") );
+
         if ( !haveSig )
             {
             break;
@@ -137,6 +139,8 @@ void SM::signal(
             {
             sigName += ringBuffer[ idx ];
             }
+
+        Serial.printf( "ivCur: 0x%p\r\n", ivCur );
 
         if ( ivCur != NULL )
             {
@@ -204,7 +208,7 @@ void SM::signal(
     /*
     ** need to lock up so only a single thread is allowed to change the state.
     */
-    Locker l( ivMut, __FILE__, __LINE__ );
+    // Locker l( ivMut, __FILE__, __LINE__ );
 
     ivDepth --;
 
