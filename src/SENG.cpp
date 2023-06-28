@@ -74,7 +74,7 @@ void SM::signal(
     std::map< std::string, ST * >::const_iterator sit;
 
     std::string * nsPtr;
-    std::string sigName;
+    char sigName[ 20 ];
 
     int depth;
 
@@ -86,6 +86,7 @@ void SM::signal(
                 <<  ((ivCur != NULL) ? ivCur->getName().c_str() : "(NULL)") << "'" << std::endl;
         }
 
+    uint8_t destIdx;
     uint8_t idx;
 
     {
@@ -138,17 +139,24 @@ void SM::signal(
             }
 
         Serial.printf( "%s(%d) - idx: %u\r\n", __FILE__, __LINE__, (unsigned) idx );
-        for( sigName.clear(); ringBuffer[ idx ] != '\0'; idx = (idx + 1) % sizeof( ringBuffer ) )
+        for( destIdx = 0; 
+                (destIdx < sizeof( sigName )) && (ringBuffer[ idx ] != '\0'); 
+                destIdx ++, idx = (idx + 1) % sizeof( ringBuffer ) )
             {
-            sigName += ringBuffer[ idx ];
+            sigName[ destIdx ] = ringBuffer[ idx ];
+            }
+
+        if ( destIdx < sizeof( sigName ) )
+            {
+            sigName[ destIdx ] = '\0';
             }
 
         Serial.printf( "%s(%d) - ivCur: 0x%p, sigName: %s\r\n", 
-                __FILE__, __LINE__, ivCur, sigName.c_str() );
+                __FILE__, __LINE__, ivCur, sigName );
 
         if ( ivCur != NULL )
             {
-            nsPtr = ivCur->signal( sigName );
+            nsPtr = ivCur->signal( std::string( sigName ) );
 
             Serial.printf( "nsPtr: 0x%p\r\n", nsPtr );
 
@@ -190,7 +198,7 @@ void SM::signal(
                 }
             }
 
-        it = ivGE.find( sigName );
+        it = ivGE.find( std::string( sigName ) );
 
         if ( it == ivGE.end() )
             {
