@@ -106,7 +106,6 @@ void SM::signal(
     inIdx = (inIdx + 1) % sizeof( ringBuffer );
     }
 
-    Serial.printf( "%s(%d) - idx: %u\r\n", __FILE__, __LINE__, (unsigned) idx );
     xQueueGenericSend( ivEvtQ, &idx, 1000, queueSEND_TO_BACK );
 
     {
@@ -130,15 +129,11 @@ void SM::signal(
         {
         haveSig = xQueueReceive( ivEvtQ, &idx, 1000 );
 
-        Serial.printf( "haveSig: %s\r\n", ((haveSig) ? "TRUE" : "FALSE") );
-
         if ( !haveSig )
             {
-            Serial.printf( "%s(%d) - break;\r\n", __FILE__, __LINE__ );
             break;
             }
 
-        Serial.printf( "%s(%d) - idx: %u\r\n", __FILE__, __LINE__, (unsigned) idx );
         for( destIdx = 0; 
                 (destIdx < sizeof( sigName )) && (ringBuffer[ idx ] != '\0'); 
                 destIdx ++, idx = (idx + 1) % sizeof( ringBuffer ) )
@@ -151,14 +146,9 @@ void SM::signal(
             sigName[ destIdx ] = '\0';
             }
 
-        Serial.printf( "%s(%d) - ivCur: 0x%p, sigName: %s\r\n", 
-                __FILE__, __LINE__, ivCur, sigName );
-
         if ( ivCur != NULL )
             {
             nsPtr = ivCur->signal( std::string( sigName ) );
-
-            Serial.printf( "nsPtr: 0x%p\r\n", nsPtr );
 
             if ( nsPtr != NULL )
                 {
@@ -167,7 +157,6 @@ void SM::signal(
                     /*
                     ** If the event is found but the next state name is empty.
                     */
-                    Serial.printf( "%s(%d) - continue\r\n", __FILE__, __LINE__ );
                     continue;
                     }
 
@@ -178,8 +167,6 @@ void SM::signal(
 
                     ivCur = sit->second;
                     
-                    Serial.printf( "%s(%d) - ost: 0x%p, ivCur: 0x%p\r\n", 
-                            __FILE__, __LINE__, ost, ivCur );
                     if ( ost != ivCur )
                         {
                         ivTmo = 0;
@@ -187,11 +174,7 @@ void SM::signal(
 
                     if ( ivCur != NULL )
                         {
-                        Serial.printf( "%s(%d) - (called) ivCur->exec()", 
-                                __FILE__, __LINE__ );
                         ivCur->exec();
-                        Serial.printf( "%s(%d) - (returned) ivCur->exec()",
-                                __FILE__, __LINE__ );
                         continue;
                         }
                     }
@@ -202,7 +185,6 @@ void SM::signal(
 
         if ( it == ivGE.end() )
             {
-            Serial.printf( "%s(%d) - continue\r\n", __FILE__, __LINE__ );
             continue;
             }
 
@@ -214,8 +196,6 @@ void SM::signal(
 
             ivCur = sit->second;
                     
-            Serial.printf( "%s(%d) - ost: 0x%p, ivCur: 0x%p\r\n", 
-                      __FILE__, __LINE__, ost, ivCur );
             if ( ost != ivCur )
                 {
                 ivTmo = 0;
@@ -223,11 +203,7 @@ void SM::signal(
             
             if ( ivCur != NULL )
                 {
-                Serial.printf( "%s(%d) - (called) ivCur->exec()",
-                        __FILE__, __LINE__ );
                 ivCur->exec();
-                Serial.printf( "%s(%d) - (returned) ivCur->exec()",
-                        __FILE__, __LINE__ );
                 continue;
                 }
             }
@@ -499,9 +475,6 @@ void SM::tick(
 
         if ( t >= ivTmo )
             {
-Serial.printf( "signal( \"tmo\" ): t: %lu, ivTmo: %lu\n",
-            t, ivTmo );
-
             ivTmo = 0;
             signal( "tmo" );
             }
