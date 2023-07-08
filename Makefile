@@ -26,6 +26,9 @@ push:
 publish:
 	@pio pkg publish
 
+mu:
+	@pio  run --target upload
+	@pio device monitor
 
 
 
