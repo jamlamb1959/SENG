@@ -4,6 +4,8 @@
 
 #include <WiFi.h>
 
+#include <SENG.h>
+
 Blink::Blink( 
         const int aLed 
         )
@@ -79,10 +81,13 @@ void Blink::swtch(
     }
 
 SENG::SENG( 
-        const char * const aFlowName 
+        const char * const aHost, 
+        const char * const aURI, 
+        const int aPort
         )
-        : ivFlowName( aFlowName )
-        , ivTmo( 0 )
+        : ivPort( aPort )
+        , ivHost( aHost )
+        , ivURI( aURI )
     {
     Seq * s = Seq::instance();
     s->reg( *this );
@@ -113,18 +118,13 @@ SENG & SENG::operator = (
 void SENG::lp(
         )
     {
-    if ( ivTmo == 0 )
-        {
-        return;
-        }
+    static std::string _TMO( "tmo" );
 
-    unsigned long now = millis();
+    static SM * sm = SM::instance();
 
-    if ( now > ivTmo )
-        {
-        ivTmo = 0;
-        Serial.println( "SENG::lp(timeout)" );
-        }
+    while( sm->exe() );
+
+    sm->tick();
     }
 
 void SENG::stp(
@@ -133,21 +133,25 @@ void SENG::stp(
     /*
     ** Load the state flow and then signal init.
     */
-    Serial.printf( "SENG::stp(entered) - ivFlowName: %s\r\n", 
-            ivFlowName.c_str() );
-    }
+    Serial.printf( "SENG::stp(entered) - ivHost: %s, ivURI: %s, ivPort: %d\r\n", 
+            ivHost.c_str(), ivURI.c_str(), ivPort );
 
-unsigned long SENG::getTimeout(
-        ) const
-    {
-    return ivTmo;
+    SM * sm = SM::instance();
+
+    while ( ! sm->loadHttp( ivHost.c_str(), ivURI.c_str(), ivPort ) )
+        {
+        Serial.printf( "ivHost: %s, ivURI: %s, ivPort: %d - loadHttp FAILED\r\n", 
+                ivHost.c_str(), ivURI.c_str(), ivPort );
+        delay( 10000 );
+        }
     }
 
 void SENG::setTimeout( 
         const unsigned int aTmo 
         )
     {
-    ivTmo = aTmo;
+    static SM * sm = SM::instance();
+    return sm->setTmo( aTmo );
     }
 
 MyWiFi::MyWiFi( 

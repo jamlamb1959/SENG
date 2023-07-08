@@ -151,7 +151,15 @@ class SM
   public:
     static SM * instance();
 
+    /*
+    ** check the ivEveBuf
+    ** if empty return false.
+    ** else exec the oldest event in the buf.
+    */
+    bool exe();
+
     bool load( const char * aConfig );
+    bool loadHttp( const char * const aHost, const char * const aURI, const int aPort = 80 );
 
     time_t now() const;
 
@@ -197,6 +205,11 @@ class SM
     void _prcsEvent( const char * & aWP );
     void _prcsState( const char * & aWP );
 
+    char ivEvtBuf[ 200 ];
+
+    unsigned int ivInIdx;
+    unsigned int ivOutIdx;
+
     int ivDepth;
     int ivVerbose;
     
@@ -206,7 +219,7 @@ class SM
     std::map< std::string, ST * > ivST;
 
     // SemaphoreHandle_t ivMut;
-    QueueHandle_t ivEvtQ;
+    // QueueHandle_t ivEvtQ;
 
     time_t ivTmo;
     };

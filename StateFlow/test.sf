@@ -1,0 +1,10 @@
+event init ST1
+
+state ST1 Tmo 10
+event tmo ST2
+
+state ST2 Tmo 2
+event tmo ST3
+
+state ST3 Tmo 5
+event tmo ST1

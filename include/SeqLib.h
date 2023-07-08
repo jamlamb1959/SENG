@@ -32,7 +32,7 @@ class SENG
         : public Seq::Task
     {
   public:
-    SENG( const char * const aFlowName );
+    SENG( const char * const aHost, const char * const aURI, const int aPort = 80 );
     SENG( const SENG & anObj );
     ~SENG();
 
@@ -48,7 +48,10 @@ class SENG
     void setTimeout( const unsigned int aTmo = 0 );
 
   private:
-    std::string ivFlowName;
+    int ivPort;
+
+    std::string ivHost;
+    std::string ivURI;
 
     unsigned long ivTmo;
     };

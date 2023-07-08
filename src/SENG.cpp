@@ -1,6 +1,9 @@
 
 #include <Arduino.h>
 
+#include <ArduinoHttpClient.h>
+#include <WiFi.h>
+
 #include <iostream>
 
 #include <string.h>
@@ -8,9 +11,9 @@
 #include "SENG.h"
 #include "Locker.h"
 
-#include <freertos/FreeRTOS.h>
+// #include <freertos/FreeRTOS.h>
 
-#include <freertos/task.h>
+// #include <freertos/task.h>
 
 #ifndef TOUT
 #define TOUT std::cout << __FILE__ << "(" << __LINE__ << "): "
@@ -62,13 +65,37 @@ void SM::signal(
     if ( ivVerbose )
         {
         TOUT << "SM::signal(enter) - aSigName: " << aSigName 
-                << "(depth: " << ivDepth << "), (ivCur: '"
+                << "(depth: " << (ivInIdx - ivOutIdx) << "), (ivCur: '"
                 <<  ((ivCur != NULL) ? ivCur->getName().c_str() : "(NULL)") << "')" << std::endl;
         }
 
-    static char ringBuffer[ 100 ];
-    static uint8_t inIdx = 0;
+    if ( (aSigName.length() + 1) > (sizeof( ivEvtBuf ) - (ivInIdx - ivOutIdx)) )
+        {
+        Serial.println( "ivEvtBuf(overflow)" );
+        return;
+        }
 
+    const char * sPtr;
+
+    for( sPtr = aSigName.c_str(); *sPtr != '\0'; sPtr ++, ivInIdx ++ )
+        {
+        ivEvtBuf[ ivInIdx % sizeof( ivEvtBuf ) ] = *sPtr;
+        }
+
+    /*
+    ** include the null character to avoid having to use outIdx;
+    */
+    ivEvtBuf[ ivInIdx % sizeof( ivEvtBuf ) ] = '\0';
+    ivInIdx ++;
+
+    TOUT << "queued signal: " << aSigName << ", ivInIdx: " << ivInIdx << ", ivOutIdx: " << ivOutIdx
+            << ", ivCur: " <<  ((ivCur != NULL) ? ivCur->getName().c_str() : "(NULL)") << "')" << std::endl;
+    return;
+    }
+
+bool SM::exe(
+        )
+    {
     bool haveSig;
 
     std::map< std::string, std::string >::const_iterator it;
@@ -84,84 +111,50 @@ void SM::signal(
     uint8_t destIdx;
     uint8_t idx;
 
-    {
-    // Locker l( ivMut, __FILE__, __LINE__ );
-
-    const char * sPtr;
-
-    for( sPtr = aSigName.c_str(), idx = inIdx; *sPtr != '\0'; sPtr ++, inIdx = (inIdx + 1) % sizeof( ringBuffer ) )
+    if ( ivInIdx == ivOutIdx )
         {
-        ringBuffer[ inIdx ] = *sPtr;
+        return false;
         }
 
-    /*
-    ** include the null character to avoid having to use outIdx;
-    */
-    ringBuffer[ inIdx ] = '\0';
-    inIdx = (inIdx + 1) % sizeof( ringBuffer );
-    }
-
-    xQueueGenericSend( ivEvtQ, &idx, 1000, queueSEND_TO_BACK );
-
-    {
-    // Locker l( ivMut, __FILE__, __LINE__ );
-    
-    depth = ivDepth ++;
-
-    if ( depth != 0 )
+    for( destIdx = 0; 
+            (ivInIdx != ivOutIdx) &&
+            (destIdx < sizeof( sigName )) && (ivEvtBuf[ ivOutIdx % sizeof( ivEvtBuf ) ] != '\0');
+             destIdx ++, ivOutIdx ++ ) 
         {
-        ivDepth --;
-    
-        return;
+        sigName[ destIdx ] = ivEvtBuf[ ivOutIdx % sizeof( ivEvtBuf ) ];
         }
-    }
 
-    /*
-    ** only one task gets to this point because of the logic above.
-    ** so the fifo should be ok because only 1 task is changing the out index.
-    */
-    for( ; ; )
+    if ( destIdx < sizeof( sigName ) )
         {
-        haveSig = xQueueReceive( ivEvtQ, &idx, 1000 );
+        sigName[ destIdx ] = '\0';
+        ivOutIdx ++;
+        }
+    else
+        {
+        Serial.println( "buffer underrun..." );
+        }
 
-        if ( !haveSig )
+    Serial.printf( "%s(%d) - %lu - SM::exe - sigName: %s, ivCur: %s\r\n", __FILE__, __LINE__, 
+            millis(), sigName, ((ivCur != NULL) ? ivCur->getName().c_str() : "(NULL)") );
+
+    if ( ivCur != NULL )
+        {
+        nsPtr = ivCur->signal( std::string( sigName ) );
+
+        if ( nsPtr != NULL )
             {
-            break;
-            }
+            Serial.printf( "%s(%d) - *nsPtr: %s\r\n", 
+                    __FILE__, __LINE__, (*nsPtr).c_str() );
 
-        for( destIdx = 0; 
-                (destIdx < sizeof( sigName )) && (ringBuffer[ idx ] != '\0'); 
-                destIdx ++, idx = (idx + 1) % sizeof( ringBuffer ) )
-            {
-            sigName[ destIdx ] = ringBuffer[ idx ];
-            }
-
-        if ( destIdx < sizeof( sigName ) )
-            {
-            sigName[ destIdx ] = '\0';
-            }
-
-        if ( ivCur != NULL )
-            {
-            nsPtr = ivCur->signal( std::string( sigName ) );
-
-            if ( nsPtr != NULL )
+            if ( nsPtr->length() != 0 )
                 {
-                if ( nsPtr->length() == 0 )
-                    {
-                    /*
-                    ** If the event is found but the next state name is empty.
-                    */
-                    continue;
-                    }
-
                 sit = ivST.find( *nsPtr );
                 if ( sit != ivST.end() )
                     {
                     ost = ivCur;
-
+    
                     ivCur = sit->second;
-                    
+                     
                     if ( ost != ivCur )
                         {
                         ivTmo = 0;
@@ -169,48 +162,51 @@ void SM::signal(
 
                     if ( ivCur != NULL )
                         {
+                        Serial.printf( "%s(%d) - ivCur: %s ->exec (return true)\r\n",
+                                __FILE__, __LINE__, ivCur->getName().c_str() );
+
                         ivCur->exec();
-                        continue;
+                        return true;
                         }
                     }
                 }
             }
-
-        it = ivGE.find( std::string( sigName ) );
-
-        if ( it == ivGE.end() )
-            {
-            continue;
-            }
-
-        sit = ivST.find( it->second );
-
-        if ( sit != ivST.end() )
-            {
-            ost = ivCur;
-
-            ivCur = sit->second;
-                    
-            if ( ost != ivCur )
-                {
-                ivTmo = 0;
-                }
-            
-            if ( ivCur != NULL )
-                {
-                ivCur->exec();
-                continue;
-                }
-            }
         }
 
-    ivDepth --;
+    it = ivGE.find( std::string( sigName ) );
 
-    if ( ivVerbose > 5 )
+    if ( it == ivGE.end() )
         {
-        Serial.printf( "SM::signal(exit) - aSigName: %s, ivDepth: %d\r\n", 
-                aSigName.c_str(), ivDepth );
+        Serial.printf( "'%s' - not found in global event.(return true)\r\n", sigName );
+        return true;
         }
+
+    sit = ivST.find( it->second );
+
+    if ( sit != ivST.end() )
+        {
+        ost = ivCur;
+
+        ivCur = sit->second;
+                    
+        if ( ost != ivCur )
+            {
+            ivTmo = 0;
+            }
+            
+        if ( ivCur != NULL )
+            {
+            Serial.printf( "%s(%d) - ivCur: %s ->exec (return true)\r\n",
+                    __FILE__, __LINE__, ivCur->getName().c_str() );
+            ivCur->exec();
+            return true;
+            }
+        }
+
+    Serial.printf( "SM::exe(exit) - sigName: %s, ivDepth: %u, ivCur: %s (return true)\r\n", 
+                sigName, (ivInIdx - ivOutIdx),
+                ((ivCur != NULL) ? ivCur->getName().c_str() : "(NULL)") );
+    return true;
     }
     
 void SM::signal( 
@@ -223,11 +219,12 @@ void SM::signal(
 
 SM::SM(
         )
-        : ivDepth( 0 )
+        : ivInIdx( 0 )
+        , ivOutIdx( 0 )
         , ivVerbose( 1 )
         , ivCur( NULL )
     {
-    ivEvtQ = xQueueCreate( 10, sizeof( const char * ) );
+    // ivEvtQ = xQueueCreate( 10, sizeof( const char * ) );
     }
 
 SM::~SM(
@@ -484,5 +481,45 @@ std::ostream & operator << (
     anObj.print( aStream );
 
     return aStream;
+    }
+
+bool SM::loadHttp( 
+        const char * const aHost, 
+        const char * const aURI, 
+        const int aPort
+        )
+    {
+    const static std::string _init( "init" );
+
+    bool ret;
+
+    WiFiClient w;
+    HttpClient cl( w, aHost, aPort );
+
+    cl.beginRequest();
+    cl.get( aURI );
+    cl.endRequest();
+
+    int rc = cl.responseStatusCode();
+    String rsp = cl.responseBody();
+
+    if ( rc != 200 )
+        {
+        Serial.printf( "rc: %d\r\nrsp:\r\n", rc );
+        Serial.println( rsp );
+
+        return false;
+        }
+
+    ret = load( rsp.c_str() );
+
+    Serial.printf( "ret: %s\r\n", (ret) ? "TRUE" : "FALSE" );
+
+    if ( ret )
+        {
+        signal( _init );
+        }
+
+    return ret;
     }
 

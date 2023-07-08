@@ -8,7 +8,7 @@ DEST=repo.sheepshed.tk
 PLATFORM=esp32dev
 PROJ=SENG
 
-all: mkdir push
+all: .test.sf mkdir push
 
 clean:
 	pio run --target clean
@@ -26,8 +26,16 @@ push:
 publish:
 	@pio pkg publish
 
-mu:
+.test.sf: StateFlow/test.sf
+	scp StateFlow/test.sf ${DEST}:/var/www/html/StateFlow/test.sf
+	touch .test.sf
+
+.upload:
 	@pio  run --target upload
+
+mu: .test.sf .upload .monitor
+
+.monitor:
 	@pio device monitor
 
 

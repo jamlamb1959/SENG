@@ -12,7 +12,7 @@ static WiFiInfo_t _wifiInfo[] =
 
 static MyWiFi _wifi( _wifiInfo );
 static Blink _blink;
-static SENG _seng( "http://repo.sheepshed.tk/StateFlow/test.sf" );
+static SENG _seng( "repo.sheepshed.tk", "/StateFlow/test.sf" );
 
 void setup()
     {
