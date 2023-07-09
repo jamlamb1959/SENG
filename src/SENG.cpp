@@ -177,6 +177,10 @@ bool SM::exe(
                         }
                     }
                 }
+            else
+                {
+                return true;
+                }
             }
         }
 

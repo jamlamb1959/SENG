@@ -7,4 +7,4 @@ state ST2 Tmo 2
 event tmo ST3
 
 state ST3 Tmo 5
-event tmo ST1
+event tmo
