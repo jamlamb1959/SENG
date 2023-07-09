@@ -226,3 +226,96 @@ void MyWiFi::stp(
 
     ivCurrent = NULL;
     }
+
+RTLIMIT::RTLIMIT( 
+        const int aRTLimitSeconds
+        , const int anInv
+        )
+        : ivRTLimit( aRTLimitSeconds )
+        , ivInv( anInv )
+        , ivTmo( 0 )
+    {
+    Seq * s = Seq::instance();
+    s->reg( *this );
+    }
+
+RTLIMIT::RTLIMIT( 
+        const RTLIMIT & anObj 
+        )
+        : ivRTLimit( anObj.ivRTLimit )
+        , ivTmo( anObj.ivTmo )
+    {
+    (void) anObj;
+
+    Seq * s = Seq::instance();
+    s->reg( *this );
+    }
+
+RTLIMIT::~RTLIMIT(
+        )
+    {
+    }
+
+RTLIMIT & RTLIMIT::operator = ( 
+        const RTLIMIT & anObj 
+        )
+    {
+    if ( this != &anObj )
+        {
+        ivRTLimit = anObj.ivRTLimit;
+        ivTmo = anObj.ivTmo;
+        }
+
+    return *this;
+    }
+
+void RTLIMIT::lp(
+        )
+    {
+    unsigned long now = millis();
+
+    if ( ivTmo == 0 )
+        {
+        return;
+        }
+
+    if ( now > ivRpt )
+        {
+        ivRpt = now + (ivInv * 1000);
+
+        if ( ivTmo > now )
+            {
+            unsigned long dt = (ivTmo - now) / 1000;
+
+            Serial.printf( "%s(%d) - time til restart: %lu (sec(s))\r\n",
+                    __FILE__, __LINE__, dt );
+            }
+        }
+
+    if ( now > ivTmo )
+        {
+        unsigned long dt = now - ivStTime;
+
+        Serial.printf( "%s(%d) - restart - dt: %lu\r\n", __FILE__, __LINE__, dt );
+        Serial.flush();
+        ESP.restart();
+        }
+    }
+
+void RTLIMIT::stp(
+            )
+    {
+    ivStTime = millis();
+
+    if ( ivRTLimit != 0 )
+        {
+        Serial.printf( "%s(%d) - ivRTLimit: %d\r\n", __FILE__, __LINE__, ivRTLimit );
+        ivTmo = ivStTime + (ivRTLimit * 1000);
+        }
+
+    if ( ivInv != 0 )
+        {
+        Serial.printf( "%s(%d) - ivInv: %d\r\n", __FILE__, __LINE__, ivInv );
+        ivRpt = ivStTime + (ivInv * 1000);
+        }
+    }

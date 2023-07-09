@@ -62,7 +62,7 @@ void SM::signal(
         const std::string & aSigName 
         )
     {
-    if ( ivVerbose )
+    if ( ivVerbose > 1 )
         {
         TOUT << "SM::signal(enter) - aSigName: " << aSigName 
                 << "(depth: " << (ivInIdx - ivOutIdx) << "), (ivCur: '"
@@ -88,8 +88,6 @@ void SM::signal(
     ivEvtBuf[ ivInIdx % sizeof( ivEvtBuf ) ] = '\0';
     ivInIdx ++;
 
-    TOUT << "queued signal: " << aSigName << ", ivInIdx: " << ivInIdx << ", ivOutIdx: " << ivOutIdx
-            << ", ivCur: " <<  ((ivCur != NULL) ? ivCur->getName().c_str() : "(NULL)") << "')" << std::endl;
     return;
     }
 
@@ -134,8 +132,11 @@ bool SM::exe(
         Serial.println( "buffer underrun..." );
         }
 
-    Serial.printf( "%s(%d) - %lu - SM::exe - sigName: %s, ivCur: %s\r\n", __FILE__, __LINE__, 
-            millis(), sigName, ((ivCur != NULL) ? ivCur->getName().c_str() : "(NULL)") );
+    if ( ivVerbose > 2 )
+        {
+        Serial.printf( "%s(%d) - %lu - SM::exe - sigName: %s, ivCur: %s\r\n", __FILE__, __LINE__, 
+                millis(), sigName, ((ivCur != NULL) ? ivCur->getName().c_str() : "(NULL)") );
+        }
 
     if ( ivCur != NULL )
         {
@@ -143,8 +144,11 @@ bool SM::exe(
 
         if ( nsPtr != NULL )
             {
-            Serial.printf( "%s(%d) - *nsPtr: %s\r\n", 
-                    __FILE__, __LINE__, (*nsPtr).c_str() );
+            if ( ivVerbose > 5 )
+                {
+                Serial.printf( "%s(%d) - *nsPtr: %s\r\n", 
+                        __FILE__, __LINE__, (*nsPtr).c_str() );
+                }
 
             if ( nsPtr->length() != 0 )
                 {
@@ -162,8 +166,11 @@ bool SM::exe(
 
                     if ( ivCur != NULL )
                         {
-                        Serial.printf( "%s(%d) - ivCur: %s ->exec (return true)\r\n",
-                                __FILE__, __LINE__, ivCur->getName().c_str() );
+                        if ( ivVerbose > 2 )
+                            {
+                            Serial.printf( "%s(%d) - ivCur: %s ->exec (return true)\r\n",
+                                    __FILE__, __LINE__, ivCur->getName().c_str() );
+                            }
 
                         ivCur->exec();
                         return true;
@@ -196,16 +203,24 @@ bool SM::exe(
             
         if ( ivCur != NULL )
             {
-            Serial.printf( "%s(%d) - ivCur: %s ->exec (return true)\r\n",
-                    __FILE__, __LINE__, ivCur->getName().c_str() );
+            if ( ivVerbose > 5 )
+                {
+                Serial.printf( "%s(%d) - ivCur: %s ->exec (return true)\r\n",
+                        __FILE__, __LINE__, ivCur->getName().c_str() );
+                }
+
             ivCur->exec();
             return true;
             }
         }
 
-    Serial.printf( "SM::exe(exit) - sigName: %s, ivDepth: %u, ivCur: %s (return true)\r\n", 
+    if ( ivVerbose > 1 )
+        {
+        Serial.printf( "SM::exe(exit) - sigName: %s, ivDepth: %u, ivCur: %s (return true)\r\n", 
                 sigName, (ivInIdx - ivOutIdx),
                 ((ivCur != NULL) ? ivCur->getName().c_str() : "(NULL)") );
+        }
+
     return true;
     }
     
@@ -513,7 +528,12 @@ bool SM::loadHttp(
 
     ret = load( rsp.c_str() );
 
-    Serial.printf( "ret: %s\r\n", (ret) ? "TRUE" : "FALSE" );
+    if ( ! ret )
+        {
+        Serial.printf( "%s(%d) - aHost: %s, aURI: %s, aPort: %d - ret: FALSE\r\n", 
+                __FILE__, __LINE__, (aHost != NULL) ? aHost : "(NULL)", 
+                (aURI != NULL) ? aURI : "(NULL)", aPort );
+        }
 
     if ( ret )
         {

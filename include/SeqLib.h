@@ -28,6 +28,28 @@ class Blink
     unsigned long int ivNxtTime;
     };
 
+class RTLIMIT
+        : public Seq::Task
+    {
+  public:
+    RTLIMIT( const int aRTLimitSeconds = 3600, const int anInv = 60 );
+    RTLIMIT( const RTLIMIT & anObj );
+    ~RTLIMIT();
+
+    RTLIMIT & operator = ( const RTLIMIT & anObj );
+
+    void lp();
+    void stp();
+
+  private:
+    int ivRTLimit;
+    int ivInv;
+
+    unsigned long ivStTime;
+    unsigned long ivRpt;
+    unsigned long ivTmo;
+    };
+
 class SENG
         : public Seq::Task
     {
