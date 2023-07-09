@@ -144,10 +144,10 @@ bool SM::exe(
 
         if ( nsPtr != NULL )
             {
-            if ( ivVerbose > 5 )
+            if ( ivVerbose )
                 {
-                Serial.printf( "%s(%d) - *nsPtr: %s\r\n", 
-                        __FILE__, __LINE__, (*nsPtr).c_str() );
+                Serial.printf( "%s(%d) - sigName: %s, ivCur: %s, *nsPtr: %s\r\n", 
+                        __FILE__, __LINE__, sigName, ivCur->getName().c_str(), (*nsPtr).c_str() );
                 }
 
             if ( nsPtr->length() != 0 )
