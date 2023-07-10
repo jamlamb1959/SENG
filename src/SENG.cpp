@@ -144,7 +144,7 @@ bool SM::exe(
 
         if ( nsPtr != NULL )
             {
-            if ( ivVerbose )
+            if ( ivVerbose > 1 )
                 {
                 Serial.printf( "%s(%d) - sigName: %s, ivCur: %s, *nsPtr: %s\r\n", 
                         __FILE__, __LINE__, sigName, ivCur->getName().c_str(), (*nsPtr).c_str() );
