@@ -1013,7 +1013,7 @@ class SMPUB
         {
         if ( SMPUB_g == NULL )
             {
-            SMPUB_g = xQueueCreate( 10, sizeof( Msg * ) );
+            SMPUB_g = xQueueCreate( 30, sizeof( Msg * ) );
             assert( SMPUB_g != NULL );
             }
 
