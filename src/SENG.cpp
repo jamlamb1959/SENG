@@ -134,7 +134,7 @@ bool SM::exe(
 
     if ( ivVerbose > 2 )
         {
-        Serial.printf( "%s(%d) - %lu - SM::exe - sigName: %s, ivCur: %s\r\n", __FILE__, __LINE__, 
+        Serial.printf( "%s(%d) - (millis): %lu - SM::exe - sigName: %s, ivCur: %s\r\n", __FILE__, __LINE__, 
                 millis(), sigName, ((ivCur != NULL) ? ivCur->getName().c_str() : "(NULL)") );
         }
 

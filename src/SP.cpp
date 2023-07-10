@@ -990,9 +990,6 @@ class SMPUB
 
                         Serial2.printf( "%*.*s\r\n", (int) ln, (int) ln, buf );
 
-                        // (void) uart_write_bytes( UART_NUM_2, buf, ln );
-                        // (void) uart_write_bytes( UART_NUM_2, "\r\n", 2 );
-            
                         delete m;
                         break;
 
@@ -1003,7 +1000,7 @@ class SMPUB
             }
         else
             {
-            SIGNAL( "tmo" );
+            SIGNAL( "empty" );
             }
         }
 
