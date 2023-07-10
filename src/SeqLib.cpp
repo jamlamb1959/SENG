@@ -83,9 +83,11 @@ void Blink::swtch(
 SENG::SENG( 
         const char * const aHost, 
         const char * const aURI, 
+        const int aVerbose,
         const int aPort
         )
         : ivPort( aPort )
+        , ivVerbose( aVerbose )
         , ivHost( aHost )
         , ivURI( aURI )
     {
@@ -137,6 +139,8 @@ void SENG::stp(
             ivHost.c_str(), ivURI.c_str(), ivPort );
 
     SM * sm = SM::instance();
+
+    sm->setVerbose( ivVerbose );
 
     while ( ! sm->loadHttp( ivHost.c_str(), ivURI.c_str(), ivPort ) )
         {

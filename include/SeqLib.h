@@ -54,7 +54,7 @@ class SENG
         : public Seq::Task
     {
   public:
-    SENG( const char * const aHost, const char * const aURI, const int aPort = 80 );
+    SENG( const char * const aHost, const char * const aURI, const int aVerbose = 0, const int aPort = 80 );
     SENG( const SENG & anObj );
     ~SENG();
 
@@ -71,6 +71,7 @@ class SENG
 
   private:
     int ivPort;
+    int ivVerbose;
 
     std::string ivHost;
     std::string ivURI;
