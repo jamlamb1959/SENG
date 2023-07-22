@@ -49,7 +49,7 @@ class Fifo
         {
         // Locker l( ivMut );
 
-        static Item null;
+        static Item null = NULL;
 
         if ( depth() == 0 )
             {

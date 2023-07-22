@@ -978,7 +978,7 @@ class SMPUB
 
         TickType_t tmo = ivTmo * 1000;
 
-        ivSMPUB.readSMPUB( &m );
+        m = (Msg *) ivSMPUB.pop();
         haveMsg = (m != NULL);
     
         if ( haveMsg )
@@ -1022,16 +1022,6 @@ class SMPUB
             const char * & aWP 
             )
         {
-#ifdef USE_QueueHandle
-        if ( SMPUB_g == NULL )
-            {
-            SMPUB_g = xQueueCreate( 30, sizeof( Msg * ) );
-            assert( SMPUB_g != NULL );
-            }
-#else
-        assert( false );
-#endif
-
         skipWS( aWP );
 
         if ( strchr( "\r\n", *aWP ) == NULL )
@@ -1431,11 +1421,7 @@ class LogTokens
 
         m->ivPayload += "}";
         
-#ifdef USE_QueueHandle
-        xQueueGenericSend( SMPUB_g, &m, 1000, queueSEND_TO_BACK );
-#else
-        assert( false );
-#endif
+        sm->writeSMPUB( (void *) m );
 
         SIGNAL( "ok" );
         TOUT << "\nivPayload: " << m->ivPayload << std::endl;
