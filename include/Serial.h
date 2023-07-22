@@ -42,6 +42,7 @@ class Console
         assert( false );
         }
 
+/*
     void println(
             const Printable & anObj
             )
@@ -49,6 +50,7 @@ class Console
         assert( false );
         (void) anObj;
         }
+*/
 
     void println( 
             const char * aStr 
