@@ -1,4 +1,11 @@
+#ifdef NOARDUINO
+#include <ESP.h>
+#include <Serial.h>
+
+#include <util.h>
+#else
 #include <Arduino.h>
+#endif
 
 #include <SeqLib.h>
 
@@ -21,6 +28,7 @@ Blink::Blink(
 Blink::Blink( 
         const Blink & anObj 
         )
+        : Seq::Task( anObj )
     {
     (void) anObj;
     }
@@ -98,6 +106,7 @@ SENG::SENG(
 SENG::SENG( 
         const SENG & anObj 
         )
+        : Seq::Task( anObj )
     {
     (void) anObj;
     }
@@ -170,7 +179,8 @@ MyWiFi::MyWiFi(
 MyWiFi::MyWiFi( 
         const MyWiFi & anObj 
         )
-        : ivInfo( anObj.ivInfo )
+        : Seq::Task( anObj )
+        , ivInfo( anObj.ivInfo )
     {
     (void) anObj;
     }
@@ -246,7 +256,8 @@ RTLIMIT::RTLIMIT(
 RTLIMIT::RTLIMIT( 
         const RTLIMIT & anObj 
         )
-        : ivRTLimit( anObj.ivRTLimit )
+        : Seq::Task( anObj )
+        , ivRTLimit( anObj.ivRTLimit )
         , ivTmo( anObj.ivTmo )
     {
     (void) anObj;

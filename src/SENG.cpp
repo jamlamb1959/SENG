@@ -1,8 +1,15 @@
 
+#ifdef NOARDUINO
+#include <Serial.h>
+
+#include <util.h>
+#include <HttpClient.h>
+#else
 #include <Arduino.h>
 
 #include <ArduinoHttpClient.h>
 #include <WiFi.h>
+#endif
 
 #include <iostream>
 
@@ -94,20 +101,15 @@ void SM::signal(
 bool SM::exe(
         )
     {
-    bool haveSig;
-
     std::map< std::string, std::string >::const_iterator it;
     std::map< std::string, ST * >::const_iterator sit;
 
     std::string * nsPtr;
     char sigName[ 20 ];
 
-    int depth;
-
     ST * ost;
 
     uint8_t destIdx;
-    uint8_t idx;
 
     if ( ivInIdx == ivOutIdx )
         {

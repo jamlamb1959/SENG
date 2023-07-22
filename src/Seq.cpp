@@ -1,4 +1,8 @@
+#ifdef NOARDUINO
+#include <Serial.h>
+#else
 #include <Arduino.h>
+#endif
 
 #include <assert.h>
 

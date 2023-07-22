@@ -10,11 +10,13 @@
 #include "Fifo.h"
 #include "Filo.h"
 
+#ifndef NOARDUINO
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
 #include <freertos/semphr.h>
 
 extern QueueHandle_t SMPUB_g;
+#endif
 
 void evalState( const std::string & aLin );
 

@@ -1,6 +1,14 @@
 // #define USE_PUBSUB
 
+#ifdef NOARDUINO
+#include <ESP.h>
+
+#include <util.h>
+#else
 #include <Arduino.h>
+
+#include "freertos/FreeRTOS.h"
+#endif
 
 #include <WiFi.h>
 
@@ -11,10 +19,6 @@
 
 #include "Fifo.h"
 #include "TknDB.h"
-
-// #include <driver/uart.h>
-
-#include "freertos/FreeRTOS.h"
 
 #include "Locker.h"
 
@@ -30,13 +34,14 @@
 // #define SIGNAL( sig ) TOUT << "signal( '" << sig << "' )\n"; sm->signal( sig )
 #define SIGNAL( sig ) return sm->signal( sig )
 
-#include <PubSubClient.h>
-
 static bool _macLoaded = false;
 static char _mac[ 20 ];
 
 #ifdef USE_PUBSUB
+#include <PubSubClient.h>
+
 extern PubSubClient mqtt_g;
+
 extern std::string topic_g;
 #endif
 
@@ -44,7 +49,9 @@ extern std::string topic_g;
 
 // extern SemaphoreHandle_t qMut_g;
 
+#ifdef USE_QueueHandle_t
 QueueHandle_t SMPUB_g = NULL;
+#endif
 
 void skipWS(
         const char * & aWP
@@ -94,6 +101,7 @@ void getTkn(
     return;
     }
 
+#ifdef LOCAL_SP
 static void _expandVar( 
         std::string & anOStr, 
         const char * & anInStr 
@@ -175,6 +183,7 @@ static void _expand(
         anIStr ++;
         }
     }
+#endif
 
 static void _loadStr(
         std::string & aStr,
@@ -227,6 +236,7 @@ class ClearQs
             const char * & aWP 
             )
         {
+        (void) aWP;
         }
 
     void print(
@@ -440,6 +450,7 @@ class ClearCaptureStack
             const char * & aWP 
             )
         {
+        (void) aWP;
         }
 
     void print(
@@ -495,6 +506,7 @@ class EvalCNAct
             const char * & aWP 
             )
         {
+        (void) aWP;
         }
 
     void print(
@@ -527,7 +539,6 @@ class EvalGPS
     void exec( 
             )
         {
-        static SM * sm = SM::instance();
         static TknDB * tdb = TknDB::instance();
 
         TOUT << "tdb:\n" << *tdb << "\n";
@@ -556,6 +567,7 @@ class EvalGPS
             const char * & aWP 
             )
         {
+        (void) aWP;
         }
 
     void print(
@@ -598,7 +610,7 @@ class EvalRegState
         wp = creg.c_str();
 
         wp = strchr( wp, ',' );
-        if ( wp != NULL );
+        if ( wp != NULL )
             {
             wp ++;
             if ( *wp != '\0' )
@@ -614,6 +626,7 @@ class EvalRegState
             const char * & aWP 
             )
         {
+        (void) aWP;
         }
 
     void print(
@@ -646,7 +659,6 @@ class EvalSMState
     void exec( 
             )
         {
-        static SM * sm = SM::instance();
         static TknDB * tdb = TknDB::instance();
 
 TOUT << "\n" << *tdb << "\n";
@@ -670,6 +682,7 @@ TOUT << "\n" << *tdb << "\n";
             const char * & aWP 
             )
         {
+        (void) aWP;
         }
 
     void print(
@@ -709,6 +722,7 @@ class Noop
             const char * & aWP 
             )
         {
+        (void) aWP;
         }
 
     void print(
@@ -758,6 +772,7 @@ class SaveIMEI
             const char * & aWP 
             )
         {
+        (void) aWP;
         }
 
     void print(
@@ -806,6 +821,7 @@ class SaveIMI
             const char * & aWP 
             )
         {
+        (void) aWP;
         }
 
     void print(
@@ -854,6 +870,7 @@ class SaveIMSI
             const char * & aWP 
             )
         {
+        (void) aWP;
         }
 
     void print(
@@ -965,7 +982,11 @@ class SMPUB
 
         TickType_t tmo = ivTmo * 1000;
 
+#ifdef USE_QueueHandle_t
         haveMsg = xQueueReceive( SMPUB_g, &m, tmo );
+#else
+assert( false );
+#endif
     
         if ( haveMsg )
             {
@@ -1008,11 +1029,15 @@ class SMPUB
             const char * & aWP 
             )
         {
+#ifdef USE_QueueHandle
         if ( SMPUB_g == NULL )
             {
             SMPUB_g = xQueueCreate( 30, sizeof( Msg * ) );
             assert( SMPUB_g != NULL );
             }
+#else
+        assert( false );
+#endif
 
         skipWS( aWP );
 
@@ -1151,6 +1176,7 @@ class DumpTDB
             const char * & aWP 
             )
         {
+        (void) aWP;
         }
 
     void print(
@@ -1273,6 +1299,7 @@ class ParseNMEA
             const char * & aWP 
             )
         {
+        (void) aWP;
         }
 
     void print(
@@ -1317,6 +1344,7 @@ class DumpTokens
             const char * & aWP 
             )
         {
+        (void) aWP;
         }
 
     void print(
@@ -1410,7 +1438,11 @@ class LogTokens
 
         m->ivPayload += "}";
         
+#ifdef USE_QueueHandle
         xQueueGenericSend( SMPUB_g, &m, 1000, queueSEND_TO_BACK );
+#else
+        assert( false );
+#endif
 
         SIGNAL( "ok" );
         TOUT << "\nivPayload: " << m->ivPayload << std::endl;
@@ -1491,8 +1523,6 @@ class QueueOperators
         const char * iwp;
         const char * wp;
 
-        size_t idx;
-
         std::string ent;
         std::string longAlpha;
         std::string operId;
@@ -1565,6 +1595,7 @@ class QueueOperators
             const char * & aWP 
             )
         {
+        (void) aWP;
         }
 
     void print(

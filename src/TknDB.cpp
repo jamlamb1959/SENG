@@ -1,6 +1,8 @@
 
 #include <iostream>
 
+#include <assert.h>
+
 #include "TknDB.h"
 
 #define TOUT std::cout << __FILE__ << "(" << __LINE__ << "): "
