@@ -549,3 +549,20 @@ bool SM::loadHttp(
     return ret;
     }
 
+void * SM::readSMPUB(
+        )
+    {
+    void * ret = NULL;
+
+    ret = ivSMPUB.pop();
+
+    return ret;
+    }
+
+void SM::writeSMPUB( 
+        void * aMsg 
+        )
+    {
+    ivSMPUB.push( aMsg );
+    }
+

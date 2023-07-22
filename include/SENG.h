@@ -14,8 +14,6 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
 #include <freertos/semphr.h>
-
-extern QueueHandle_t SMPUB_g;
 #endif
 
 void evalState( const std::string & aLin );
@@ -200,6 +198,9 @@ class SM
     */
     void tick();
 
+    void * readSMPUB();
+    void writeSMPUB( void * aMsg );
+    
   private:
     SM();
     ~SM();
@@ -208,6 +209,8 @@ class SM
     void _prcsState( const char * & aWP );
 
     char ivEvtBuf[ 200 ];
+
+    Fifo< void * > ivSMPUB;
 
     unsigned int ivInIdx;
     unsigned int ivOutIdx;

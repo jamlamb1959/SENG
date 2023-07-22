@@ -49,10 +49,6 @@ extern std::string topic_g;
 
 // extern SemaphoreHandle_t qMut_g;
 
-#ifdef USE_QueueHandle_t
-QueueHandle_t SMPUB_g = NULL;
-#endif
-
 void skipWS(
         const char * & aWP
         )
@@ -982,11 +978,8 @@ class SMPUB
 
         TickType_t tmo = ivTmo * 1000;
 
-#ifdef USE_QueueHandle_t
-        haveMsg = xQueueReceive( SMPUB_g, &m, tmo );
-#else
-assert( false );
-#endif
+        ivSMPUB.readSMPUB( &m );
+        haveMsg = (m != NULL);
     
         if ( haveMsg )
             {
