@@ -184,6 +184,7 @@ class SM
             )
         {
         ivVerbose = aVerbose;
+        Serial.print( "ivVerbose: " ); Serial.println( ivVerbose );
         }
 
     /*
