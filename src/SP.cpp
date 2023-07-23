@@ -378,6 +378,7 @@ class Send
             }
 #endif
 
+        Serial.print( "S: " ); Serial.println( msg.c_str() );
         Serial2.print( msg.c_str() ); Serial2.print( "\r\n" );
 
         // (void) uart_write_bytes( UART_NUM_2, msg.c_str(), msg.length() );
