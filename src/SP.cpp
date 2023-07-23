@@ -1003,6 +1003,8 @@ class SMPUB
 
                         ln = strlen( buf );
 
+                        Serial.printf( "S: %*.*s\r\n", (int) ln, (int) ln, buf );
+
                         Serial2.printf( "%*.*s\r\n", (int) ln, (int) ln, buf );
 
                         delete m;
@@ -1639,6 +1641,8 @@ class SetNetwork
             {
             std::cout << "S: '" << msg << "'" << std::endl;
             }
+
+        Serial.print( "S: " ); Serial.println( msg.c_str() );
 
         Serial2.print( msg.c_str() ); Serial2.print( "\r\n" );
         // (void) uart_write_bytes( UART_NUM_2, msg.c_str(), msg.length() );
