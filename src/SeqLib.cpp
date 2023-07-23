@@ -144,8 +144,8 @@ void SENG::stp(
     /*
     ** Load the state flow and then signal init.
     */
-    Serial.printf( "SENG::stp(entered) - ivHost: %s, ivURI: %s, ivPort: %d\r\n", 
-            ivHost.c_str(), ivURI.c_str(), ivPort );
+    Serial.printf( "SENG::stp(entered) - ivHost: %s, ivURI: %s, ivPort: %d, ivVerbose: %d\r\n", 
+            ivHost.c_str(), ivURI.c_str(), ivPort, ivVerbose );
 
     SM * sm = SM::instance();
 
