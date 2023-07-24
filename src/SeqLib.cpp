@@ -157,6 +157,8 @@ void SENG::stp(
                 ivHost.c_str(), ivURI.c_str(), ivPort );
         delay( 10000 );
         }
+
+    Serial.println( "SENG::stp(return)" );
     }
 
 void SENG::setTimeout( 

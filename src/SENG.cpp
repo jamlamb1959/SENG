@@ -211,7 +211,7 @@ bool SM::exe(
             {
             if ( ivVerbose > 5 )
                 {
-                Serial.printf( "%s(%d) - ivCur: %s ->exec (return true)\r\n",
+                Serial.printf( "%s(%d) - ivCur: %s(call exec) (return true)\r\n",
                         __FILE__, __LINE__, ivCur->getName().c_str() );
                 }
 
@@ -555,6 +555,11 @@ void * SM::readSMPUB(
     void * ret = NULL;
 
     ret = ivSMPUB.pop();
+
+    if ( ret != NULL )
+        {
+        Serial.println( "SM::readSMPUB(returned message):" );
+        }
 
     return ret;
     }

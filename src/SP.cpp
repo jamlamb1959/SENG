@@ -29,7 +29,7 @@
 // void checkUpdate();
  
 #ifndef TOUT
-#define TOUT std::cout << "(" << __LINE__ << "): "
+#define TOUT std::cout << __FILE__ << "(" << __LINE__ << "): "
 #endif
 // #define SIGNAL( sig ) TOUT << "signal( '" << sig << "' )\n"; sm->signal( sig )
 #define SIGNAL( sig ) return sm->signal( sig )
@@ -97,7 +97,6 @@ void getTkn(
     return;
     }
 
-#ifdef LOCAL_SP
 static void _expandVar( 
         std::string & anOStr, 
         const char * & anInStr 
@@ -179,7 +178,6 @@ static void _expand(
         anIStr ++;
         }
     }
-#endif
 
 static void _loadStr(
         std::string & aStr,
@@ -330,7 +328,6 @@ class ParseSMSUB
 
 MOM( ParseSMSUB );
 
-#ifdef LOCAL_SP
 class Send
         : public SP
     {
@@ -415,7 +412,6 @@ class Send
     };
 
 MOM( Send );
-#endif
 
 class ClearCaptureStack
         : public SP
@@ -938,8 +934,6 @@ class Tmo
 
 MOM( Tmo );
 
-#ifdef __LOCAL_SP
-
 class SMPUB
         : public SP
     {
@@ -979,7 +973,7 @@ class SMPUB
 
         TickType_t tmo = ivTmo * 1000;
 
-        m = (Msg *) ivSMPUB.pop();
+        m = (Msg *) sm->readSMPUB();
         haveMsg = (m != NULL);
     
         if ( haveMsg )
@@ -1045,7 +1039,6 @@ class SMPUB
     };
 
 MOM( SMPUB );
-#endif
 
 SQ * SQ::instance(
         )
@@ -1592,8 +1585,6 @@ class QueueOperators
 
 MOM( QueueOperators );
 
-#ifdef __LOCAL_SP
-
 class SetNetwork
         : public SP
     {
@@ -1675,7 +1666,6 @@ class SetNetwork
     };
 
 MOM( SetNetwork );
-#endif
 
 class Branch
         : public SP
