@@ -554,14 +554,12 @@ void * SM::readSMPUB(
     {
     void * ret = NULL;
 
-    ret = ivSMPUB.pop();
-
-    if ( ret != NULL )
+    if ( ivSMPUB.pop( ret ) )
         {
-        Serial.println( "SM::readSMPUB(returned message):" );
+        return ret;
         }
 
-    return ret;
+    return NULL;
     }
 
 void SM::writeSMPUB( 

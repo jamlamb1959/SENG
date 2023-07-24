@@ -22,8 +22,6 @@ class Fifo
             , ivOutIdx( 0 )
         {
         ivQ = new Item[ ivCapacity ];
-
-        // ivMut = xSemaphoreCreateMutex();
         }
 
     ~Fifo(
@@ -44,33 +42,30 @@ class Fifo
         return (ivInIdx - ivOutIdx);
         }
 
-    Item pop(
+    bool pop(
+            Item & anItem
             )
         {
-        // Locker l( ivMut );
-
-        static Item null = NULL;
-
         if ( depth() == 0 )
             {
             TOUT << "empty\n";
 
-            return null;
+            return false;
             }
 
         size_t offset = ivOutIdx % ivCapacity;
 
         ivOutIdx ++;
 
-        return ivQ[ offset ];
+        anItem = ivQ[ offset ];
+
+        return true;
         }
 
     void push(
             const Item & anItem
             )
         {
-        // Locker l( ivMut );
-
         if ( depth() == ivCapacity )
             {
             TOUT << "Q full\n";
@@ -88,8 +83,6 @@ class Fifo
     void reset(
             )
         {
-        // Locker l( ivMut );
-
         ivInIdx = ivOutIdx = 0;
         }
 
@@ -99,7 +92,5 @@ class Fifo
     size_t ivCapacity;
     size_t ivInIdx;
     size_t ivOutIdx;
-
-    // SemaphoreHandle_t ivMut;
     };
 #endif

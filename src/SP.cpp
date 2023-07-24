@@ -220,7 +220,6 @@ class ClearQs
         static SM * sm = SM::instance();
         static SQ * sq = SQ::instance();
 
-//        Locker l( qMut_g, __FILE__, __LINE__  );
         sq->reset();
 
         SIGNAL( "ok" );
@@ -987,7 +986,7 @@ class SMPUB
                     case Msg::t_pub:
                         imsi = tdb->get( std::string( "IMSI" ) );
 
-                        sq->push( m->ivPayload );
+                        sq->push( m->ivPayload.c_str() );
 
                         sprintf( buf, "AT+SMPUB=\"/SP/RPT/%s\",%u,0,0", imsi.c_str(), m->ivPayload.length() );
                         if ( sm->getVerbose() > 1 )
