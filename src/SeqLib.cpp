@@ -92,7 +92,7 @@ SENG::SENG(
         const char * const aFlow, 
         const int aVerbose
         )
-        : ivFlos( aFlow )
+        : ivFlow( aFlow )
         , ivVerbose( aVerbose )
     {
     Seq * s = Seq::instance();
