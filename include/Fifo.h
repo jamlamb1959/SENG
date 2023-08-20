@@ -48,8 +48,6 @@ class Fifo
         {
         if ( depth() == 0 )
             {
-            TOUT << "empty\n";
-
             return false;
             }
 
