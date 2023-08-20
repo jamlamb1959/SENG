@@ -4,7 +4,9 @@
 
 #include <iostream>
 
-#define defCapacity_l   10
+#ifndef defCapacity_l
+#define defCapacity_l   20
+#endif
 #ifndef TOUT
 #define TOUT  std::cout << __FILE__ << "(" << __LINE__ << "): "
 #endif
