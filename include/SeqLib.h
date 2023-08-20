@@ -71,6 +71,8 @@ class SENG
     void setTimeout( const unsigned int aTmo = 0 );
 
   private:
+    const char * ivFlow;
+
     int ivPort;
     int ivVerbose;
 

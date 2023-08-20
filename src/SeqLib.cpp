@@ -92,9 +92,8 @@ SENG::SENG(
         const char * const aFlow, 
         const int aVerbose
         )
-        : ivVerbose( aVerbose )
-        , ivHost( aFlow )
-        , ivURI( NULL )
+        : ivFlos( aFlow )
+        , ivVerbose( aVerbose )
     {
     Seq * s = Seq::instance();
     s->reg( *this );
@@ -106,7 +105,8 @@ SENG::SENG(
         const int aVerbose,
         const int aPort
         )
-        : ivPort( aPort )
+        : ivFlow( NULL )
+        , ivPort( aPort )
         , ivVerbose( aVerbose )
         , ivHost( aHost )
         , ivURI( aURI )
@@ -156,16 +156,17 @@ void SENG::stp(
     /*
     ** Load the state flow and then signal init.
     */
-    Serial.printf( "SENG::stp(entered) - ivHost: %s, ivURI: %s, ivPort: %d, ivVerbose: %d\r\n", 
-            ivHost.c_str(), ivURI.c_str(), ivPort, ivVerbose );
+    Serial.printf( "SENG::stp(entered) - ivHost: %s, ivURI: %s, ivPort: %d, ivVerbose: %d, ivFlow: %s\r\n", 
+            ivHost.c_str(), ivURI.c_str(), ivPort, ivVerbose, 
+            (ivFlow != NULL) ? "TRUE" : "FALSE" );
 
     SM * sm = SM::instance();
 
     sm->setVerbose( ivVerbose );
 
-    if ( ivURI.length() == 0 )
+    if ( ivFlow != NULL )
         {
-        while ( ! sm->load( ivHost.c_str() ) )
+        while ( ! sm->load( ivFlow ) )
             {
             delay( 10000 );
             }
