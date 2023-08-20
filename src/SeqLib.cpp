@@ -87,6 +87,18 @@ void Blink::swtch(
     digitalWrite( ivLed, (ivState) ? HIGH : LOW );
     ivState = !(ivState);
     }
+ 
+SENG::SENG( 
+        const char * const aFlow, 
+        const int aVerbose
+        )
+        : ivVerbose( aVerbose )
+        , ivHost( aFlow )
+        , ivURI( NULL )
+    {
+    Seq * s = Seq::instance();
+    s->reg( *this );
+    }
 
 SENG::SENG( 
         const char * const aHost, 
@@ -151,11 +163,21 @@ void SENG::stp(
 
     sm->setVerbose( ivVerbose );
 
-    while ( ! sm->loadHttp( ivHost.c_str(), ivURI.c_str(), ivPort ) )
+    if ( ivURI.length() == 0 )
         {
-        Serial.printf( "ivHost: %s, ivURI: %s, ivPort: %d - loadHttp FAILED\r\n", 
-                ivHost.c_str(), ivURI.c_str(), ivPort );
-        delay( 10000 );
+        while ( ! sm->load( ivHost.c_str() ) )
+            {
+            delay( 10000 );
+            }
+        }
+    else
+        {
+        while ( ! sm->loadHttp( ivHost.c_str(), ivURI.c_str(), ivPort ) )
+            {
+            Serial.printf( "ivHost: %s, ivURI: %s, ivPort: %d - loadHttp FAILED\r\n", 
+                    ivHost.c_str(), ivURI.c_str(), ivPort );
+            delay( 10000 );
+            }
         }
 
     Serial.println( "SENG::stp(return)" );
