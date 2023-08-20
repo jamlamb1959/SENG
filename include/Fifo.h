@@ -4,7 +4,7 @@
 #include <iostream>
 #include <Locker.h>
 
-#define defCapacity_l   10
+#define defCapacity_l   20
 
 #ifndef TOUT
 #define TOUT std::cout << __FILE__ << "(" << __LINE__ << "): "

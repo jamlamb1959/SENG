@@ -4,7 +4,7 @@ else
 BNAME=$(shell basename ${PWD})
 endif
 
-DEST=repo.sheepshed.tk
+DEST=pharmdata.ddns.net
 PLATFORM=esp32dev
 PROJ=SENG
 
