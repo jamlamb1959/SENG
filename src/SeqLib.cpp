@@ -153,6 +153,8 @@ void SENG::lp(
 void SENG::stp(
         )
     {
+    const static std::string _init( "init" );
+
     /*
     ** Load the state flow and then signal init.
     */
@@ -170,6 +172,8 @@ void SENG::stp(
             {
             delay( 10000 );
             }
+
+        sm->signal( _init );
         }
     else
         {
